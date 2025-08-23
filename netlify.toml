@@ -7,4 +7,4 @@
 
 [functions]
   directory = "netlify/functions"
-  node_builder = "esbuild"
+  node_bundler = "esbuild"
