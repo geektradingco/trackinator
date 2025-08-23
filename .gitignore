@@ -1,6 +1,7 @@
 public/
 .env
 node_modules/
-
+test-write.js
 # Local Netlify folder
 .netlify
+credentials.json
