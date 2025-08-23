@@ -3,7 +3,7 @@ import axios from 'axios'
 import { log } from '../../utils/logger.js'
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-const SHEET_ID = '1yvigAx3R4Z3EIzVO_iLxCITzGQ820GoKthAUp6MOaHo'
+const SHEET_ID = process.env.GOOGLE_SHEET_ID
 
 export async function handler(event, context) {
   log('🔄 Trackinator invoked')
