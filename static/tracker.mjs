@@ -25,7 +25,7 @@ function buildPayload() {
 function sendTrackingData() {
   const payload = buildPayload();
 
-  fetch('/.netlify/functions/track', {
+  fetch('https://trackinator.netlify.app/.netlify/functions/track', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
