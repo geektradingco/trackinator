@@ -1,0 +1,9 @@
+{
+  "name": "trackinator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "google-spreadsheet": "^5.0.2"
+  }
+}
