@@ -4,6 +4,9 @@
   "main": "index.js",
   "type": "module",
   "dependencies": {
-    "google-spreadsheet": "^5.0.2"
+    "axios": "^1.11.0",
+    "google-auth-library": "^10.2.1",
+    "google-spreadsheet": "^5.0.2",
+    "netlify-cli": "^1.2.3"
   }
 }

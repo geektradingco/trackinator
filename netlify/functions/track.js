@@ -1,29 +1,42 @@
-import { logToSheet } from '../../lib/sheets.js'
+import { JWT } from 'google-auth-library'
+import axios from 'axios'
+import { log } from '../../utils/logger.js'
 
-export default async (req) => {
-  if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 })
-  }
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+const SHEET_ID = '1yvigAx3R4Z3EIzVO_iLxCITzGQ820GoKthAUp6MOaHo'
+
+export async function handler(event, context) {
+  log('🔄 Trackinator invoked')
 
   try {
-    const data = await req.json()
+    const jwtClient = new JWT({
+      email: process.env.GOOGLE_CLIENT_EMAIL,
+      key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      scopes: SCOPES,
+    })
 
-    const row = {
-      Timestamp: new Date().toISOString(),
-      URL: data.url || '',
-      Referrer: data.referrer || '',
-      UTM_Source: data.utm?.source || '',
-      UTM_Medium: data.utm?.medium || '',
-      UTM_Campaign: data.utm?.campaign || '',
-      Screen: `${data.screen?.width}x${data.screen?.height}` || '',
-      UserAgent: req.headers.get('user-agent') || ''
+    const { access_token } = await jwtClient.authorize()
+    log('🔐 JWT authorized')
+
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?fields=sheets.properties`
+
+    const response = await axios.get(url, {
+      headers: { Authorization: `Bearer ${access_token}` },
+      timeout: 5000,
+    })
+
+    log('✅ Sheet metadata retrieved', { sheetCount: response.data.sheets.length })
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ sheets: response.data.sheets }),
     }
+  } catch (error) {
+    log('❌ Error fetching sheet metadata', { error: error.message })
 
-    await logToSheet(row)
-
-    return new Response('Logged to Google Sheets', { status: 200 })
-  } catch (err) {
-    console.error('Trackinator error:', err)
-    return new Response('Internal Server Error', { status: 500 })
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Trackinator failed to fetch sheet metadata' }),
+    }
   }
 }
